@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<basket>
+  <metadata>
+    <id>BASKET_20251213_ADJ1</id>
+    <timestamp>2025-12-13T21:18:13.629773</timestamp>
+    <type>ADJUSTMENT</type>
+    <spotValue>26000.0</spotValue>
+    <reference>26000.0</reference>
+  </metadata>
+  <orders>
+    <order>
+      <action>BUY</action>
+      <strike>26300.0</strike>
+      <type>CE</type>
+      <quantity>50</quantity>
+      <index>+3</index>
+    </order>
+    <order>
+      <action>BUY</action>
+      <strike>26100.0</strike>
+      <type>PE</type>
+      <quantity>50</quantity>
+      <index>-1</index>
+    </order>
+    <order>
+      <action>SELL</action>
+      <strike>26000.0</strike>
+      <type>CE</type>
+      <quantity>50</quantity>
+      <index>+1</index>
+    </order>
+    <order>
+      <action>SELL</action>
+      <strike>25800.0</strike>
+      <type>PE</type>
+      <quantity>50</quantity>
+      <index>-3</index>
+    </order>
+  </orders>
+</basket>

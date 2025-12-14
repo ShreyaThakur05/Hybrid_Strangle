@@ -1,0 +1,58 @@
+{
+  "id": "BASKET_20251214_EXIT",
+  "timestamp": "2025-12-14T12:56:59.651831",
+  "spotValue": 26300.0,
+  "reference": 26200.0,
+  "type": "FORCE_EXIT",
+  "loss_percent": 1.153846153846154,
+  "orders": [
+    {
+      "action": "BUY",
+      "strike": 26200.0,
+      "type": "PE",
+      "qty": 50,
+      "index": "-1",
+      "remark": "BASKET_20251214_EXIT"
+    },
+    {
+      "action": "BUY",
+      "strike": 26200.0,
+      "type": "CE",
+      "qty": 50,
+      "index": "+1",
+      "remark": "BASKET_20251214_EXIT"
+    },
+    {
+      "action": "BUY",
+      "strike": 26100.0,
+      "type": "PE",
+      "qty": 50,
+      "index": "-2",
+      "remark": "BASKET_20251214_EXIT"
+    },
+    {
+      "action": "BUY",
+      "strike": 26300.0,
+      "type": "CE",
+      "qty": 50,
+      "index": "+2",
+      "remark": "BASKET_20251214_EXIT"
+    },
+    {
+      "action": "BUY",
+      "strike": 26000.0,
+      "type": "PE",
+      "qty": 50,
+      "index": "-3",
+      "remark": "BASKET_20251214_EXIT"
+    },
+    {
+      "action": "BUY",
+      "strike": 26400.0,
+      "type": "CE",
+      "qty": 50,
+      "index": "+3",
+      "remark": "BASKET_20251214_EXIT"
+    }
+  ]
+}
