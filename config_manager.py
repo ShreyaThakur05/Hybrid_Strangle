@@ -10,32 +10,47 @@ from config import CONFIG
 class ConfigManager:
     """Manages configuration persistence and updates"""
     
-    def __init__(self, config_file='config.json'):
-        self.config_file = config_file
-        self.config = self._load_config()
+    def __init__(self):
+        # Load state from config.py
+        self.config = CONFIG['state'].copy()
     
-    def _load_config(self):
-        """Load config from file or create default"""
-        if os.path.exists(self.config_file):
-            with open(self.config_file, 'r') as f:
-                return json.load(f)
-        else:
-            # Create default config
-            default_config = {
-                'closed_date': '2025-12-11',
-                'max_adjustment': 0,
-                'spot_reference': 0.0
-            }
-            self._save_config(default_config)
-            return default_config
-    
-    def _save_config(self, config=None):
-        """Save config to file"""
-        if config is None:
-            config = self.config
-        
-        with open(self.config_file, 'w') as f:
-            json.dump(config, f, indent=2)
+    def _save_config(self):
+        """Update config.py file with new state values"""
+        try:
+            # Read current config.py
+            with open('config.py', 'r') as f:
+                content = f.read()
+            
+            # Update state values in the file
+            import re
+            
+            # Update closed_date
+            content = re.sub(
+                r"'closed_date': '[^']*'",
+                f"'closed_date': '{self.config['closed_date']}'",
+                content
+            )
+            
+            # Update max_adjustment
+            content = re.sub(
+                r"'max_adjustment': \d+",
+                f"'max_adjustment': {self.config['max_adjustment']}",
+                content
+            )
+            
+            # Update spot_reference
+            content = re.sub(
+                r"'spot_reference': [\d.]+",
+                f"'spot_reference': {self.config['spot_reference']}",
+                content
+            )
+            
+            # Write back to file
+            with open('config.py', 'w') as f:
+                f.write(content)
+                
+        except Exception as e:
+            print(f"Failed to update config.py: {e}")
     
     def get_current_date(self):
         """Get current system date as string"""

@@ -3,7 +3,7 @@ Configuration settings for the Shoonya 6-Leg Strangle Basket Creator
 """
 
 CONFIG = {
-    'config_file': 'config.json',
+    'config_file': None,  # No longer using JSON file
     'basket_dir': 'baskets',
     'xml_schema': 'basket_schema.xsd',
     'check_interval': 1,  # seconds
@@ -36,12 +36,17 @@ CONFIG = {
         'exchange': 'NFO',
         'product_type': 'M',  # NRML
         'quantity': 75,
-        'session_start': '09:20:00',
-        'session_end': '14:00:00',
-        'max_adjustment': 0,
-        'closed_date': '2025-12-15',
-        'spot_reference': 0.0,
+        'session_start': '07:20:00',
+        'session_end': '09:15:00',
         'max_loss_percent': 1.0,  # Force exit if loss > 1%
         'force_exit_movement': 200  # Force exit if spot moves >= 200 points
+    },
+    
+    # State Configuration (previously in config.json)
+    'state': {
+ 
+        'closed_date': '2025-12-14',
+        'max_adjustment': 2,
+        'spot_reference': 25930.05
     }
 }

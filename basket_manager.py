@@ -267,31 +267,41 @@ class BasketManager:
         self.config_manager.update_spot_reference(new_reference)
     
     def _attempt_order_placement(self, basket_data, basket_name):
-        """Attempt to place orders in Shoonya"""
-        if not self.api.logged_in:
-            print("Not logged in to Shoonya. Skipping order placement.")
-            return
+        """Attempt to place orders in Shoonya - COMMENTED OUT FOR TESTING"""
+        # if not self.api.logged_in:
+        #     print("Not logged in to Shoonya. Skipping order placement.")
+        #     return
         
         try:
             orders = []
             for order_data in basket_data['orders']:
                 order = self.api.create_order_from_data(order_data, basket_name)
                 orders.append(order)
-                print(f"Created order: {order.buy_or_sell} {order.tradingsymbol} Qty:{order.quantity}")
+                print(f"[TESTING] Created order: {order.buy_or_sell} {order.tradingsymbol} Qty:{order.quantity}")
             
-            print(f"Placing {len(orders)} orders...")
-            results = self.api.place_basket_orders(orders)
+            print(f"[TESTING] Would place {len(orders)} orders...")
+            # results = self.api.place_basket_orders(orders)
+            
+            # TESTING MODE: Mock successful results
+            results = []
+            for i in range(len(orders)):
+                results.append({
+                    'stat': 'Ok', 
+                    'norenordno': f'TEST{i+1:03d}{datetime.now().strftime("%H%M%S")}',
+                    'emsg': ''
+                })
+            
             successful = sum(1 for r in results if r and r.get('stat') == 'Ok')
-            print(f"Basket orders placed: {successful}/{len(orders)} successful")
+            print(f"[TESTING] Mock basket orders placed: {successful}/{len(orders)} successful")
             
             for i, result in enumerate(results):
                 if result:
                     status = result.get('stat', 'Unknown')
                     order_id = result.get('norenordno', 'No ID')
                     error_msg = result.get('emsg', '')
-                    print(f"Order {i+1}: {status} - {order_id} {error_msg}")
+                    print(f"[TESTING] Order {i+1}: {status} - {order_id} {error_msg}")
                 else:
-                    print(f"Order {i+1}: Failed - No response")
+                    print(f"[TESTING] Order {i+1}: Failed - No response")
                     
         except Exception as e:
             print(f"Order placement failed: {e}")
@@ -363,14 +373,16 @@ class BasketManager:
         """Get current market prices for all positions"""
         prices = {}
         try:
+            expiry = self.api.get_current_weekly_expiry()
             for position in self.current_positions:
-                # Use Shoonya API to get current option price
-                expiry = "26DEC24"  # Update with actual expiry
-                symbol = f"{self.config['trading']['index']}{expiry}{position.strike}{position.type}"
+                # CORRECT FORMAT: NIFTY16DEC25C26000
+                option_suffix = 'C' if position.type == 'CE' else 'P'
+                symbol = f"{self.config['trading']['index']}{expiry}{option_suffix}{position.strike}"
                 quote = self.api.get_quotes('NFO', symbol)
-                if quote and 'lp' in quote:
+                if quote and quote.get('stat') == 'Ok' and 'lp' in quote:
                     prices[position.strike] = float(quote['lp'])
                 else:
+                    print(f"Failed to get price for {symbol}")
                     prices[position.strike] = 0.0
         except Exception as e:
             print(f"Error fetching market prices: {e}")

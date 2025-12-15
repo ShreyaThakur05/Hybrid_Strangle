@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='utf-8'?>
+<basket>
+  <metadata>
+    <id>BASKET_20251215_INITIAL</id>
+    <timestamp>2025-12-15T09:07:48.846704</timestamp>
+    <type>INITIAL</type>
+    <spotValue>25930.05</spotValue>
+    <reference>None</reference>
+  </metadata>
+  <orders>
+    <order execution_order="1">
+      <action>SELL</action>
+      <strike>25900</strike>
+      <type>PE</type>
+      <quantity>75</quantity>
+      <index>-1</index>
+    </order>
+    <order execution_order="2">
+      <action>SELL</action>
+      <strike>25900</strike>
+      <type>CE</type>
+      <quantity>75</quantity>
+      <index>+1</index>
+    </order>
+    <order execution_order="3">
+      <action>SELL</action>
+      <strike>25800</strike>
+      <type>PE</type>
+      <quantity>75</quantity>
+      <index>-2</index>
+    </order>
+    <order execution_order="4">
+      <action>SELL</action>
+      <strike>26000</strike>
+      <type>CE</type>
+      <quantity>75</quantity>
+      <index>+2</index>
+    </order>
+    <order execution_order="5">
+      <action>SELL</action>
+      <strike>25700</strike>
+      <type>PE</type>
+      <quantity>75</quantity>
+      <index>-3</index>
+    </order>
+    <order execution_order="6">
+      <action>SELL</action>
+      <strike>26100</strike>
+      <type>CE</type>
+      <quantity>75</quantity>
+      <index>+3</index>
+    </order>
+  </orders>
+</basket>
