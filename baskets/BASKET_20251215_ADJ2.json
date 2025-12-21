@@ -1,8 +1,11 @@
 {
-  "id": "BASKET_20251215_INITIAL",
-  "timestamp": "2025-12-15T16:26:37.575284",
+  "id": "BASKET_20251215_ADJ2",
+  "timestamp": "2025-12-15T15:39:54.780682",
   "spotValue": 26027.3,
-  "type": "INITIAL",
+  "oldReference": 26127.3,
+  "newReference": 26027.3,
+  "movement": -100.0,
+  "type": "ADJUSTMENT",
   "orders": [
     {
       "action": "SELL",
@@ -10,8 +13,7 @@
       "type": "PE",
       "qty": 75,
       "index": "-1",
-      "remark": "BASKET_1765796194",
-      "execution_order": 1
+      "remark": "BASKET_20251215_ADJ2"
     },
     {
       "action": "SELL",
@@ -19,8 +21,7 @@
       "type": "CE",
       "qty": 75,
       "index": "+1",
-      "remark": "BASKET_1765796194",
-      "execution_order": 2
+      "remark": "BASKET_20251215_ADJ2"
     },
     {
       "action": "SELL",
@@ -28,8 +29,7 @@
       "type": "PE",
       "qty": 75,
       "index": "-2",
-      "remark": "BASKET_1765796194",
-      "execution_order": 3
+      "remark": "BASKET_20251215_ADJ2"
     },
     {
       "action": "SELL",
@@ -37,8 +37,7 @@
       "type": "CE",
       "qty": 75,
       "index": "+2",
-      "remark": "BASKET_1765796194",
-      "execution_order": 4
+      "remark": "BASKET_20251215_ADJ2"
     },
     {
       "action": "SELL",
@@ -46,8 +45,7 @@
       "type": "PE",
       "qty": 75,
       "index": "-3",
-      "remark": "BASKET_1765796194",
-      "execution_order": 5
+      "remark": "BASKET_20251215_ADJ2"
     },
     {
       "action": "SELL",
@@ -55,8 +53,7 @@
       "type": "CE",
       "qty": 75,
       "index": "+3",
-      "remark": "BASKET_1765796194",
-      "execution_order": 6
+      "remark": "BASKET_20251215_ADJ2"
     }
   ]
 }

@@ -26,12 +26,17 @@ class BasketManager:
         # State management
         self.current_positions = []
         self.baskets = []
-        self.position_prices = {}  # Track sell prices
     
     def initialize(self):
         """Initialize the basket manager"""
         api_success = self.api.authenticate(self.config['shoonya'])
         sheets_success = self.trade_logger.initialize_sheets()
+        
+        # Set API reference in trade logger for margin calculations
+        self.trade_logger.set_api_reference(self.api)
+        
+        # Skip account limits checking
+        
         return api_success and sheets_success
     
     def create_basket(self, basket_data):
@@ -123,9 +128,7 @@ class BasketManager:
         current_prices = self._get_current_market_prices()
         
         # Calculate portfolio P&L
-        total_pl, pl_percentage, total_margin = self.trade_logger.calculate_portfolio_pl(
-            self.current_positions, current_prices
-        )
+        total_pl, pl_percentage, total_margin = self.trade_logger.calculate_portfolio_pl(current_prices)
         
         max_loss = self.config['trading']['max_loss_percent']
         
@@ -152,8 +155,8 @@ class BasketManager:
         for position in self.current_positions:
             if position.strike in current_prices:
                 current_price = current_prices[position.strike]
-                sell_price = self.position_prices.get(f"{position.strike}_{position.type}", 0)
                 
+                sell_price = getattr(position, 'sell_price', 0)
                 pl, pl_pct = self.trade_logger.log_trade(
                     position, sell_price, current_price, 'BUY'
                 )
@@ -184,13 +187,20 @@ class BasketManager:
         basket = self.create_basket(exit_basket)
         self.baskets.append(basket)
         
+        # Calculate total margin for exit summary
+        total_margin = 0
+        for position in self.current_positions:
+            if position.strike in current_prices:
+                price = current_prices[position.strike]
+                margin = self.trade_logger._calculate_margin(position, price)
+                total_margin += margin
+        
         # Log basket summary
-        if pl_percentage:
-            self.trade_logger.log_basket_summary(exit_basket, total_pl, pl_percentage)
+        final_pl_pct = pl_percentage if pl_percentage else (total_pl / (len(self.current_positions) * self.trade_logger.margin_per_lot) * 100) if self.current_positions else 0
+        self.trade_logger.log_basket_summary(exit_basket, total_pl, final_pl_pct)
         
         # Reset state
         self.current_positions = []
-        self.position_prices = {}
         self.config_manager.reset_for_next_day()
         
         print(f"Force exit completed. All positions closed.")
@@ -217,7 +227,12 @@ class BasketManager:
         for position in to_close:
             if position.strike in current_prices:
                 current_price = current_prices[position.strike]
-                sell_price = self.position_prices.get(f"{position.strike}_{position.type}", 0)
+                
+                # Get stored sell price from config
+                sell_price = self.config_manager.get_position_price(position.strike, position.type)
+                if sell_price == 0.0:
+                    sell_price = current_price  # Fallback
+                position.sell_price = sell_price  # Set for logging
                 
                 pl, pl_pct = self.trade_logger.log_trade(
                     position, sell_price, current_price, 'BUY'
@@ -228,7 +243,7 @@ class BasketManager:
         for position in to_open:
             if position.strike in current_prices:
                 market_price = current_prices[position.strike]
-                self.position_prices[f"{position.strike}_{position.type}"] = market_price
+                self.config_manager.save_position_price(position.strike, position.type, market_price)
                 
                 pl, pl_pct = self.trade_logger.log_trade(
                     position, market_price, market_price, 'SELL'
@@ -257,8 +272,11 @@ class BasketManager:
         basket = self.create_basket(basket_data)
         self.baskets.append(basket)
         
+        # Calculate total margin for basket summary
+        total_margin = len(target_positions) * self.trade_logger.margin_per_lot
+        
         # Log basket summary
-        pl_percentage = (total_pl / (len(target_positions) * 75 * 800000 / 75)) * 100
+        pl_percentage = (total_pl / (len(target_positions) * self.trade_logger.margin_per_lot) * 100) if target_positions else 0
         self.trade_logger.log_basket_summary(basket_data, total_pl, pl_percentage)
         
         # Update state
@@ -334,18 +352,24 @@ class BasketManager:
         # Get market prices and log initial trades
         current_prices = self._get_current_market_prices()
         total_pl = 0
+        total_margin = 0
         
         for position in self.current_positions:
             if position.strike in current_prices:
                 market_price = current_prices[position.strike]
                 # Store sell price for future P&L calculation
-                self.position_prices[f"{position.strike}_{position.type}"] = market_price
+                self.config_manager.save_position_price(position.strike, position.type, market_price)
                 
                 # Log initial SELL trade
                 pl, pl_pct = self.trade_logger.log_trade(
                     position, market_price, market_price, 'SELL'
                 )
                 total_pl += pl
+                
+                # Calculate margin for this position
+                lots = position.qty / self.trade_logger.lot_size
+                margin = lots * self.trade_logger.margin_per_lot
+                total_margin += margin
         
         # Create initial basket data
         date_str = datetime.now().strftime('%Y%m%d')
@@ -363,9 +387,15 @@ class BasketManager:
         basket = self.create_basket(basket_data)
         self.baskets.append(basket)
         
+        # Log initial basket summary
+        pl_percentage = (total_pl / total_margin * 100) if total_margin > 0 else 0
+        self.trade_logger.log_basket_summary(basket_data, total_pl, pl_percentage)
+        
         # Update config
         self.config_manager.update_spot_reference(initial_spot)
         self.config_manager.reset_adjustments()
+        
+        # Skip account summary update
         
         return basket_data
     

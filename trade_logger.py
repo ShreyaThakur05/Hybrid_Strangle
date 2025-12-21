@@ -5,16 +5,15 @@ Google Sheets trade logging system
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
-import json
 
 class TradeLogger:
-    """Google Sheets trade logging"""
+    """Simple Google Sheets trade logging"""
     
     def __init__(self, config):
         self.config = config
         self.sheet = None
-        self.margin_per_lot = 800000  # 8 lakh per lot
         self.lot_size = 75
+        self.margin_per_lot = 800000  # 8 lakh per lot as originally specified
         
     def initialize_sheets(self):
         """Initialize Google Sheets connection"""
@@ -48,47 +47,44 @@ class TradeLogger:
     
     def _setup_headers(self):
         """Setup spreadsheet headers"""
-        # Add title row
-        title_row = ['NIFTY 6-LEG STRANGLE TRADING LOG']
-        self.sheet.append_row(title_row)
-        
-        # Add empty row
+        # Add title
+        self.sheet.append_row(['NIFTY 6-LEG STRANGLE TRADING LOG'])
+        self.sheet.append_row(['Account:', self.config['shoonya']['user']])
         self.sheet.append_row([])
         
-        # Add headers with descriptions
+        # Add trade log headers
         headers = [
             'Date', 'Time', 'Strike', 'Type', 'Action', 
-            'Sell Price', 'Current/Buy Price', 'Profit/Loss',
+            'Sell Price', 'Current/Buy Price', 'P&L',
             'Qty', 'Lots', 'Total Margin', 'P&L %'
         ]
         self.sheet.append_row(headers)
         
         # Add description row
         descriptions = [
-            'Trade Date', 'Trade Time', 'Option Strike', 'CE/PE', 'SELL/BUY',
-            'Sell Value', 'Current Value or Buy Price', 'Profit or Loss Amount',
+            'Trade Date', 'Trade Time', 'Strike Price', 'CE/PE', 'SELL/BUY',
+            'Sell Value', 'Current/Buy Value', 'Profit/Loss Amount',
             'Quantity', 'Number of Lots', 'Deployed Capital', 'Loss/Profit %'
         ]
         self.sheet.append_row(descriptions)
-        
-        # Add separator row
         self.sheet.append_row([''] * 12)
     
     def log_trade(self, position, sell_price, current_price, action='SELL'):
-        """Log individual trade"""
+        """Log individual trade with simple P&L calculation"""
         if not self.sheet:
-            return
+            return 0, 0
             
         try:
             lots = position.qty / self.lot_size
             total_margin = lots * self.margin_per_lot
             
             if action == 'SELL':
-                profit_loss = (sell_price - current_price) * position.qty
+                profit_loss = 0  # No P&L on opening
+                position.sell_price = sell_price  # Store for future calculations
             else:  # BUY (closing)
-                profit_loss = (current_price - sell_price) * position.qty
+                profit_loss = (sell_price - current_price) * position.qty
             
-            pl_percentage = (profit_loss / total_margin) * 100
+            pl_percentage = (profit_loss / total_margin * 100) if total_margin > 0 else 0
             
             row = [
                 datetime.now().strftime('%Y-%m-%d'),
@@ -96,7 +92,7 @@ class TradeLogger:
                 position.strike,
                 position.type,
                 action,
-                sell_price,
+                sell_price if action == 'SELL' else getattr(position, 'sell_price', 0),
                 current_price,
                 profit_loss,
                 position.qty,
@@ -121,7 +117,7 @@ class TradeLogger:
             summary_row = [
                 datetime.now().strftime('%Y-%m-%d'),
                 datetime.now().strftime('%H:%M:%S'),
-                f"BASKET_{basket_data['type']}",
+                f"BASKET_{basket_data.get('type', 'SUMMARY')}",
                 'SUMMARY',
                 '',
                 '',
@@ -134,17 +130,13 @@ class TradeLogger:
             ]
             
             self.sheet.append_row(summary_row)
-            
-            # Add total P&L summary
-            total_row = ['', '', 'TOTAL P&L', '', '', '', '', total_pl, '', '', '', f"{total_pl_percent:.2f}%"]
-            self.sheet.append_row(total_row)
-            self.sheet.append_row([''] * 12)  # Empty row separator
+            self.sheet.append_row([''] * 12)
             
         except Exception as e:
             print(f"Basket summary logging failed: {e}")
     
     def calculate_portfolio_pl(self, positions, current_prices):
-        """Calculate total portfolio P&L"""
+        """Calculate total portfolio P&L with simple calculation"""
         total_pl = 0
         total_margin = 0
         
@@ -163,3 +155,11 @@ class TradeLogger:
         
         pl_percentage = (total_pl / total_margin * 100) if total_margin > 0 else 0
         return total_pl, pl_percentage, total_margin
+    
+    def update_account_summary(self, limits_data=None):
+        """Update account summary - disabled"""
+        pass
+    
+    def set_api_reference(self, api):
+        """Set API reference"""
+        self.api = api

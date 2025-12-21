@@ -52,103 +52,94 @@ class ShoonyaApiWrapper(NorenApi):
             return False
     
     def place_order_direct(self, order):
-        """Direct API call to place order (fallback method) - COMMENTED OUT FOR TESTING"""
-        # import json
-        # import requests
+        """Direct API call to place order (fallback method)"""
+        import json
+        import requests
         
-        # # Build the request
-        # url = "https://api.shoonya.com/NorenWClientTP/PlaceOrder"
+        # Build the request
+        url = "https://api.shoonya.com/NorenWClientTP/PlaceOrder"
         
-        # order_data = {
-        #     'uid': self.username,
-        #     'actid': self.username,
-        #     'exch': order.exchange,
-        #     'tsym': order.tradingsymbol,
-        #     'qty': str(order.quantity),
-        #     'dscqty': str(order.discloseqty),
-        #     'prc': str(order.price),
-        #     'prd': order.product_type,
-        #     'trantype': order.buy_or_sell,
-        #     'prctyp': order.price_type,
-        #     'ret': order.retention,
-        #     'remarks': order.remarks
-        # }
+        order_data = {
+            'uid': self.username,
+            'actid': self.username,
+            'exch': order.exchange,
+            'tsym': order.tradingsymbol,
+            'qty': str(order.quantity),
+            'dscqty': str(order.discloseqty),
+            'prc': str(order.price),
+            'prd': order.product_type,
+            'trantype': order.buy_or_sell,
+            'prctyp': order.price_type,
+            'ret': order.retention,
+            'remarks': order.remarks
+        }
         
-        # payload = {
-        #     'jData': json.dumps(order_data),
-        #     'jKey': self.user_token
-        # }
+        payload = {
+            'jData': json.dumps(order_data),
+            'jKey': self.user_token
+        }
         
-        # print(f"Direct API payload: {payload['jData']}")
+        print(f"Direct API payload: {payload['jData']}")
         
-        # try:
-        #     response = requests.post(url, data=payload)
-        #     result = response.json()
-        #     print(f"Direct API response: {result}")
-        #     return result
-        # except Exception as e:
-        #     print(f"Direct API call failed: {e}")
-        #     return None
-        
-        # TESTING MODE: Return mock success response
-        print(f"[TESTING] Would place order: {order.buy_or_sell} {order.tradingsymbol} Qty:{order.quantity}")
-        return {'stat': 'Ok', 'norenordno': f'TEST{datetime.now().strftime("%H%M%S")}'}
+        try:
+            response = requests.post(url, data=payload)
+            result = response.json()
+            print(f"Direct API response: {result}")
+            return result
+        except Exception as e:
+            print(f"Direct API call failed: {e}")
+            return None
     
     def place_basket_orders(self, orders):
-        """Place multiple orders using NorenApi built-in method - COMMENTED OUT FOR TESTING"""
+        """Place multiple orders using NorenApi built-in method"""
         results = []
         
         for i, order in enumerate(orders):
             try:
                 print(f"\n{'='*50}")
-                print(f"[TESTING] Would place order {i+1}: {order.buy_or_sell} {order.tradingsymbol} Qty:{order.quantity}")
+                print(f"Placing order {i+1}: {order.buy_or_sell} {order.tradingsymbol} Qty:{order.quantity}")
                 print(f"Details: Exchange={order.exchange}, Product={order.product_type}, Price Type={order.price_type}")
                 
-                # # Add validation before placing order
-                # if not self.logged_in:
-                #     print(f"❌ Not logged in!")
-                #     results.append({'stat': 'Not_Ok', 'emsg': 'Not logged in'})
-                #     continue
+                # Add validation before placing order
+                if not self.logged_in:
+                    print(f"❌ Not logged in!")
+                    results.append({'stat': 'Not_Ok', 'emsg': 'Not logged in'})
+                    continue
                 
-                # # Use NorenApi's place_order method with explicit parameters
-                # result = self.place_order(
-                #     buy_or_sell=order.buy_or_sell,
-                #     product_type=order.product_type,
-                #     exchange=order.exchange,
-                #     tradingsymbol=order.tradingsymbol,
-                #     quantity=int(order.quantity),  # Ensure it's an integer
-                #     discloseqty=int(order.discloseqty),  # Ensure it's an integer
-                #     price_type=order.price_type,
-                #     price=float(order.price) if order.price_type != 'MKT' else 0,
-                #     trigger_price=None,  # Don't send trigger_price for MKT orders
-                #     retention=order.retention,
-                #     remarks=order.remarks
-                # )
+                # Use NorenApi's place_order method with explicit parameters
+                result = self.place_order(
+                    buy_or_sell=order.buy_or_sell,
+                    product_type=order.product_type,
+                    exchange=order.exchange,
+                    tradingsymbol=order.tradingsymbol,
+                    quantity=int(order.quantity),  # Ensure it's an integer
+                    discloseqty=int(order.discloseqty),  # Ensure it's an integer
+                    price_type=order.price_type,
+                    price=float(order.price) if order.price_type != 'MKT' else 0,
+                    trigger_price=None,  # Don't send trigger_price for MKT orders
+                    retention=order.retention,
+                    remarks=order.remarks
+                )
                 
-                # print(f"Raw result: {result}")
-                # print(f"Result type: {type(result)}")
+                print(f"Raw result: {result}")
+                print(f"Result type: {type(result)}")
                 
-                # # If None, try direct API call
-                # if result is None:
-                #     print(f"Trying direct API call...")
-                #     result = self.place_order_direct(order)
+                # If None, try direct API call
+                if result is None:
+                    print(f"Trying direct API call...")
+                    result = self.place_order_direct(order)
                 
-                # # Check if result is still None
-                # if result is None:
-                #     print(f"⚠ Order returned None - This usually means an API error")
+                # Check if result is still None
+                if result is None:
+                    print(f"⚠ Order returned None - This usually means an API error")
                     
-                #     # Check if there's an error in the parent class
-                #     if hasattr(self, '__lastresponse__'):
-                #         print(f"Last response: {self.__lastresponse__}")
+                    # Check if there's an error in the parent class
+                    if hasattr(self, '__lastresponse__'):
+                        print(f"Last response: {self.__lastresponse__}")
                     
-                #     results.append({'stat': 'Not_Ok', 'emsg': 'API returned None'})
-                # else:
-                #     results.append(result)
-                
-                # TESTING MODE: Return mock success response
-                result = {'stat': 'Ok', 'norenordno': f'TEST{i+1:03d}{datetime.now().strftime("%H%M%S")}'}
-                results.append(result)
-                print(f"[TESTING] Mock order placed successfully: {result['norenordno']}")
+                    results.append({'stat': 'Not_Ok', 'emsg': 'API returned None'})
+                else:
+                    results.append(result)
                 
             except Exception as exc:
                 print(f"❌ Order {i+1} failed with exception: {exc}")
@@ -301,3 +292,8 @@ class ShoonyaApiWrapper(NorenApi):
         except Exception as e:
             print(f"Error getting spot price: {str(e)}")
             return None
+    
+
+    
+
+    

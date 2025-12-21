@@ -45,6 +45,13 @@ class ConfigManager:
                 content
             )
             
+            # Update position_prices
+            content = re.sub(
+                r"'position_prices': \{[^}]*\}",
+                f"'position_prices': {self.config['position_prices']}",
+                content
+            )
+            
             # Write back to file
             with open('config.py', 'w') as f:
                 f.write(content)
@@ -98,6 +105,7 @@ class ConfigManager:
         self.config['spot_reference'] = 0.0
         self.config['max_adjustment'] = 0
         self.config['closed_date'] = self.get_current_date()
+        self.config['position_prices'] = {}
         self._save_config()
     
     def get_spot_reference(self):
@@ -116,4 +124,20 @@ class ConfigManager:
     def reset_adjustments(self):
         """Reset adjustment count to maximum"""
         self.config['max_adjustment'] = 2
+        self._save_config()
+    
+    def save_position_price(self, strike, option_type, price):
+        """Save position sell price"""
+        key = f"{strike}_{option_type}"
+        self.config['position_prices'][key] = float(price)
+        self._save_config()
+    
+    def get_position_price(self, strike, option_type):
+        """Get saved position sell price"""
+        key = f"{strike}_{option_type}"
+        return self.config['position_prices'].get(key, 0.0)
+    
+    def clear_position_prices(self):
+        """Clear all position prices"""
+        self.config['position_prices'] = {}
         self._save_config()

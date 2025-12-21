@@ -1,49 +1,49 @@
 <?xml version='1.0' encoding='utf-8'?>
 <basket>
   <metadata>
-    <id>BASKET_20251215_INITIAL</id>
-    <timestamp>2025-12-15T16:26:37.575284</timestamp>
-    <type>INITIAL</type>
+    <id>BASKET_20251215_ADJ2</id>
+    <timestamp>2025-12-15T15:39:54.780682</timestamp>
+    <type>ADJUSTMENT</type>
     <spotValue>26027.3</spotValue>
-    <reference>None</reference>
+    <reference>26027.3</reference>
   </metadata>
   <orders>
-    <order execution_order="1">
+    <order>
       <action>SELL</action>
       <strike>26000</strike>
       <type>PE</type>
       <quantity>75</quantity>
       <index>-1</index>
     </order>
-    <order execution_order="2">
+    <order>
       <action>SELL</action>
       <strike>26000</strike>
       <type>CE</type>
       <quantity>75</quantity>
       <index>+1</index>
     </order>
-    <order execution_order="3">
+    <order>
       <action>SELL</action>
       <strike>25900</strike>
       <type>PE</type>
       <quantity>75</quantity>
       <index>-2</index>
     </order>
-    <order execution_order="4">
+    <order>
       <action>SELL</action>
       <strike>26100</strike>
       <type>CE</type>
       <quantity>75</quantity>
       <index>+2</index>
     </order>
-    <order execution_order="5">
+    <order>
       <action>SELL</action>
       <strike>25800</strike>
       <type>PE</type>
       <quantity>75</quantity>
       <index>-3</index>
     </order>
-    <order execution_order="6">
+    <order>
       <action>SELL</action>
       <strike>26200</strike>
       <type>CE</type>
