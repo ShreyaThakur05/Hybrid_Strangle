@@ -13,8 +13,8 @@ CONFIG = {
         'enabled': True,
         'smtp_server': 'smtp.gmail.com',
         'smtp_port': 587,
-        'from_email': 'shreyathakurindia@gmail.com',
-        'app_password': 'gzcf vvwy efsp wtmm',
+        'from_email': '',
+        'app_password': '',
         'to_emails': [
             ''
         ]
@@ -22,12 +22,12 @@ CONFIG = {
     
     # Shoonya API Configuration
     'shoonya': {
-        'user': 'FA367053',
-        'pwd': 'Shreya@0503',
-        'factor2': '57MVEP4VRYWF3554S275B3POCA426373',
-        'vc': 'FA367053_U',
-        'app_key': 'bbd83a033ef48e58107d9d3453a89bb2',
-        'imei': 'abc1234'
+        'user': '',
+        'pwd': '',
+        'factor2': '',
+        'vc': '',
+        'app_key': '',
+        'imei': ''
     },
     
     # Trading Configuration
