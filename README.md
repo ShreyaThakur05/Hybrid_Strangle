@@ -264,19 +264,6 @@ The output executable will be generated in the `dist/` folder. The `BasketCreato
 
 ---
 
-## Disclaimer
-
-> **This project is for educational and research purposes only.**  
-> Options trading involves significant financial risk. Past performance of any strategy does not guarantee future results. Always paper-trade or test with minimal capital before live deployment. The authors are not responsible for any financial losses incurred through the use of this software.
-
----
-
-## License
-
-No license file is currently included. Please contact the repository owner for usage terms.
-
----
-
 ## Author
 
 **Shreya Thakur** — [@ShreyaThakur05](https://github.com/ShreyaThakur05)
